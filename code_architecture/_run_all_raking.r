@@ -72,25 +72,24 @@ for (sexval in sexes){
     
     collapse_allcause <- F
     if (collapse_allcause){
-      #--------------------------
-      # II. Prep allcause files
-      # NOTE: This will eventually happen AFTER allcause raking
-      #--------------------------
+      #---------------------------------------------------------------------
+      # III. Submit the script "collapse_allcause_ages.r" to supercomputer
+      #---------------------------------------------------------------------
       print("submitting allcause prep jobs")
       allcause_prep_jid <- qsub(code="collapse_allcause_ages.r",
                                 arguments=c(allcause_dir, yearval, sexval),
                                 sgeoutput=sgeoutput,
                                 shell=shell,
-                                slots=5)
+                                slots=5) # memory
     }
     else{
       allcause_prep_jid <- NULL
     }
 
     
-    #--------------------------
-    # III. Rake allcause
-    #--------------------------
+    #-----------------------------------------------------
+    # III. Submit the script "rake_by_geography.r"
+    #-----------------------------------------------------
     allcause_rake_jid <- qsub(code="rake_by_geography.r",
                               arguments=c(allcause_dir, yearval, sexval),
                               sgeoutput=sgeoutput,
@@ -99,7 +98,7 @@ for (sexval in sexes){
                               hold=allcause_prep_jid)
     
     #--------------------------
-    # IV. Rake cause-specific
+    # V. Rake cause-specific
     #--------------------------
     
     

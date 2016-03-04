@@ -11,6 +11,10 @@
 ##        --child_namelist: "/" separated string with cause ids for all child datasets, e.g. "_inj/_comm/_ncd"
 ###################################################################################################################################
 
+##---------------------------------------------
+## Prep
+##---------------------------------------------
+
 library(data.table)
 library(reshape2)
 library(doParallel)
@@ -30,9 +34,13 @@ main_dir <-"/home/j/Project/us_counties/mortality/cod/counties/bod2015/v2016_02_
 child_namelist <- "_comm/_ncd/_inj"
 allcause_id <- "v2016_02_03"
 
+
+##---------------------------------------------
+## Load Data
+##---------------------------------------------
 child_namelist <- strsplit(child_namelist, split="/")[[1]]
 
-#get settigns for any one element of child_namelist, doesn't matter which
+#get settings for any one element of child_namelist, doesn't matter which
 get_settings(paste0(main_dir, child_namelist[1]))
 
 # raking_cause_dir will be a file name, unless you're raking for level 1 causes, in which case 
@@ -92,6 +100,10 @@ aggregated_by_cause <- lapply(child_namelist, function(child){
 aggregated_by_cause<-rbindlist(aggregated_by_cause)
 setnames(aggregated_by_cause, "area", upper_area_var)
 
+##---------------------------------------------
+## Begin raking loop
+##---------------------------------------------
+
 all_raked <- lapply(unique(parent$age), function(ageval){
 #all_raked <- lapply(c(0), function(ageval){
   print(paste("raking for age", ageval))
@@ -106,6 +118,9 @@ all_raked <- lapply(unique(parent$age), function(ageval){
   
   orig_merged<- copy(merged)
   
+  ##---------------------------------------------
+  ## Rake repeatedly until results don't change
+  ##---------------------------------------------
   
   merged[, begin_mx:= mx]
   merged[, mx_change:=1] #initialize mx_change so we can keep track
@@ -139,6 +154,9 @@ all_raked <- lapply(unique(parent$age), function(ageval){
 
 all_raked <- rbindlist(all_raked)
 
+##---------------------------------------------
+## Save
+##---------------------------------------------
 
 # save individual files
 print("saving")

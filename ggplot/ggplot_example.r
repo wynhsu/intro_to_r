@@ -42,7 +42,7 @@ bar_by_state <- ggplot(suicides, aes(x=year, y=deaths, color=means)) +
 ##------------------------------------------------------------------
 ## look at a one state example to explor other dimensions/plot formats
 ##------------------------------------------------------------------
-one_state <- all_suicides[suicides$state=="Haryana"] %>% 
+one_state <- all_suicides[all_suicides$state=="Haryana"] %>% 
               group_by(year, state, sex, age, means) %>% 
               mutate(deaths = sum(deaths))
 
@@ -55,7 +55,7 @@ density_plots <- ggplot(one_state, aes(x=deaths)) +
                        x="Deaths",
                        y="Density")
 
-one_state <- all_suicides[suicides$state=="Haryana"] %>% 
+one_state <- all_suicides[all_suicides$state=="Haryana"] %>% 
               group_by(year, state, means) %>% 
               mutate(deaths = sum(deaths))
 
