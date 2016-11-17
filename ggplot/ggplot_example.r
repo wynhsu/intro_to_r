@@ -1,6 +1,5 @@
 library(ggplot2)
 library(data.table)
-library(reshape2)
 library(dplyr)
 
 
@@ -26,6 +25,10 @@ color_by_means <- ggplot(suicides, aes(x=year, y=deaths, color=means)) +
 
 # facet out by state, toggle scales on and off
 scatter_by_state <- ggplot(suicides, aes(x=year, y=deaths, color=means)) +
+                    geom_point(size=3) +
+                    facet_wrap(~state)
+
+scatter_by_state <- ggplot(suicides, aes(x=year, y=deaths, color=means)) +
                   geom_point(size=3) +
                   facet_wrap(~state, scales="free")
 
@@ -40,7 +43,7 @@ bar_by_state <- ggplot(suicides, aes(x=year, y=deaths, color=means)) +
                 facet_wrap(~state, scales="free")
 
 ##------------------------------------------------------------------
-## look at a one state example to explor other dimensions/plot formats
+## look at a one state example to explore other dimensions/plot formats
 ##------------------------------------------------------------------
 one_state <- all_suicides[all_suicides$state=="Haryana"] %>% 
               group_by(year, state, sex, age, means) %>% 
@@ -51,7 +54,7 @@ one_state <- all_suicides[all_suicides$state=="Haryana"] %>%
 density_plots <- ggplot(one_state, aes(x=deaths)) +
                   geom_density(aes(color=means, fill=means), size=1, alpha=0.5) +
                   facet_grid(age~sex, scales="free") +
-                  labs(title="Distribution of Suicides by Age, Sex, and Means, 2001-2010",
+                  labs(title="Haryana: Distribution of Suicides by Age, Sex, and Means, 2001-2010",
                        x="Deaths",
                        y="Density")
 
