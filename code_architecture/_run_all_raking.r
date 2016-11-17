@@ -98,47 +98,59 @@ for (sexval in sexes){
                               hold=allcause_prep_jid)
     
     #--------------------------
-    # V. Rake cause-specific
+    # IV. Rake cause-specific
     #--------------------------
     
-    
+    for (this_cause in cause_list$acause){
+      
+      this_cause_id <- cause_list[acause==this_cause, cause_id]
+      child_namelist <- cause_list[parent_id==this_cause_id, acause]
+      
+      cause_specific_rake_jid <- qsub(code="rake_by_geography_and_cause.r",
+                                      arguments=c(cause_temp_dir, yearval, sexval, this_cause_id, child_namelist),
+                                      sgeoutput=sgeoutput,
+                                      shell=shell,
+                                      slots=10,
+                                      hold=allcause_rake_jid)
+      
+    }
     
   }
 }
 
 
-# #---------------------------------------
-# # VI. Submint collapsing and compiling jobs
-# #---------------------------------------
-# 
-# print("submitting collapse and compile jobs")
-# sae_dir <- "../../../sae_models/"
-# setwd(sae_dir)
-# 
-# setkeyv(job_ids, c("acause", "year"))
-# validate <- F
-# raked <- T
-# 
-# for (this_cause in unique(job_ids$acause)){
-#   print(this_cause)
-#   cause_main_dir <- paste0(cause_dir, "/", this_cause)
-#   
-#   #collapse
-#   coll_jid <- lapply(years, function(yearval) {
-#               qsub(code = paste0("demog/agg_collapse_mx.r"),
-#                    name= paste0("collapse_mx_", this_cause, "_", yearval),
-#                    arguments = c(cause_main_dir, yearval, validate, raked),
-#                    #hold = job_ids[J(this_cause, yearval), jid],
-#                    slots=30)
-#               })
-#   
-#   ## compile mx predictions
-#   comp_jid <- qsub(code = paste0("demog/compile_mx_preds.r"),
-#                    name=paste0("compile_mx_", this_cause),
-#                    arguments = c(cause_main_dir, validate, raked),
-#                    hold = unlist(coll_jid))
-#               
-# }
+#---------------------------------------
+# VI. Submint collapsing and compiling jobs
+#---------------------------------------
+
+print("submitting collapse and compile jobs")
+sae_dir <- "../../../sae_models/"
+setwd(sae_dir)
+
+setkeyv(job_ids, c("acause", "year"))
+validate <- F
+raked <- T
+
+for (this_cause in unique(job_ids$acause)){
+  print(this_cause)
+  cause_main_dir <- paste0(cause_dir, "/", this_cause)
+
+  #collapse
+  coll_jid <- lapply(years, function(yearval) {
+              qsub(code = paste0("demog/agg_collapse_mx.r"),
+                   name= paste0("collapse_mx_", this_cause, "_", yearval),
+                   arguments = c(cause_main_dir, yearval, validate, raked),
+                   #hold = job_ids[J(this_cause, yearval), jid],
+                   slots=30)
+              })
+
+  ## compile mx predictions
+  comp_jid <- qsub(code = paste0("demog/compile_mx_preds.r"),
+                   name=paste0("compile_mx_", this_cause),
+                   arguments = c(cause_main_dir, validate, raked),
+                   hold = unlist(coll_jid))
+
+}
 
 
 print("all jobs submitted!")
