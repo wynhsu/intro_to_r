@@ -4,7 +4,7 @@ library(dplyr)
 
 
 load("suicides.rdata")
-all_suicides <- copy(suicides)
+all_suicides <- copy(suicides) ## GIVE EXAMPLE OF POINTERS, with actual people and actual pointing.
 suicides <- suicides %>% 
             group_by(year, state, means) %>% 
             mutate(deaths = sum(deaths))
